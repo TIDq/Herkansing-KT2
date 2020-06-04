@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 
 class FactuurController extends Controller
 {
-    public function index()
+    public function index($id)
     {
-        $facturen = Factuur::all();
-        return view('factuur.index', compact('facturen'));
+        $factuur = Factuur::findOrFail($id);
+        return view('factuur.index', compact('factuur'));
     }
 }

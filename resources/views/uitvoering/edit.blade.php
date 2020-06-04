@@ -1,3 +1,4 @@
+@extends('layouts.app')
 @section('content')
     <form method="POST" action="{{ route('uitvoering.update', $uitvoering->id) }}">
         @csrf
@@ -6,41 +7,40 @@
         <div class="columns">
             <div class="column">
                 <label for="name"><h2>Begin Tijd</h2></label>
-                <input type="date" class="input" name="begin_tijd" value="{{ $uitvoering->begin_tijd }}">
+                <input type="date" class="input" name="begin_tijd" value="{{ $uitvoering->begin_datum }}">
             </div>
             <div class="column">
                 <label for="name"><h2>Eind Tijd</h2></label>
-                <input type="date" class="input" name="eind_tijd" value="{{ $uitvoering->eind_tijd }}">
+                <input type="date" class="input" name="eind_tijd" value="{{ $uitvoering->eind_datum }}">
             </div>
-            <div class="columns">
-                <div class="column">
-                    <p>Cursus</p>
-                    <div class="select">
-                        <select name="cursus_id">
-                            @forelse($cursussen as $cursus)
-                                <option value="{{ $cursus->id }}">{{ $cursus->omschrijving }}</option>
-                            @empty
-                                <option value="null">Geen cursus beschikbaar</option>
-                            @endforelse
-                        </select>
-                    </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                <p>Cursus</p>
+                <div class="select">
+                    <select name="cursus_id">
+                        @forelse($cursussen as $cursus)
+                            <option value="{{ $cursus->id }}" @if($uitvoering->cursus->id == $cursus->id) selected @endif>{{ $cursus->omschrijving }}</option>
+                        @empty
+                            <option value="null">Geen cursus beschikbaar</option>
+                        @endforelse
+                    </select>
                 </div>
             </div>
+        </div>
         <div class="columns">
             <div class="column">
                 <button type="submit" class="button is-success">Update</button>
             </div>
-            <div class="column">
-                <form action="{{ route('uitvoering.destroy', $uitvoering->id) }}" method="POST">
-                    @csrf
-                    {{ method_field('DELETE') }}
-                    <button type="submit" class="button is-danger">Delete</button>
-                </form>
-            </div>
-        </div>
         </div>
     </form>
-
+    <div class="columns">
+        <form action="{{ route('uitvoering.destroy', $uitvoering->id) }}" method="POST">
+            @csrf
+            {{ method_field('DELETE') }}
+            <button type="submit" class="button is-danger">Delete</button>
+        </form>
+    </div>
 @endsection
 @push('scripts')
     <script>

@@ -7,9 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Cursus extends Model
 {
-    use SoftDeletes;
 
-    public $table = "cursus";
+    protected $table = "cursus";
 
     public function uitvoering()
     {

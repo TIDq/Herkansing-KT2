@@ -12,7 +12,7 @@ class Uitvoering extends Model
     ];
 
     public function cursus() {
-        return $this->belongsTo('App\Cursus', 'cursus_id');
+        return $this->belongsTo('\App\Cursus', 'cursus_id', 'id');
     }
     protected $casts = [
         'created_at' => 'datetime',

@@ -41,7 +41,7 @@
                             <td><a href="{{route('uitvoering.edit', $uitvoering->id)}}" class="card-footer-item button is-warning">Bewerk</a></td>
                                 @endcan
                             @can('order-placement')
-                                <td><a href="/" class="card-footer-item button is-warning">Bestel</a></td>
+                                <td><a href="/cart/{{ $uitvoering->id }}/add" class="card-footer-item button is-warning">Bestel</a></td>
                                 @endcan
                         </tr>
                     @endforeach

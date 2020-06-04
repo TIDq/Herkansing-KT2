@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Factuur;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Uitvoering;
 use App\Cursus;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -22,7 +25,7 @@ class UitvoeringController extends Controller
     public function index()
     {
 
-        $uitvoeringen = Uitvoering::all()->sortBy('date');
+        $uitvoeringen = Uitvoering::all();
         return view('uitvoering.index', compact('uitvoeringen'));
     }
 
@@ -64,7 +67,7 @@ class UitvoeringController extends Controller
         //Data versuren naar een applicatie
         $uitvoering->save();
 
-        return redirect()->route('uitvoering.index')->with('success', 'Uitvoering '."'"."'".' aangemaakt');
+        return redirect()->route('uitvoering.index')->with('success', 'Uitvoering \''.$uitvoering->cursus->omschrijving.'\' aangemaakt');
     }
 
     /**
@@ -87,7 +90,8 @@ class UitvoeringController extends Controller
     public function edit($id)
     {
         $uitvoering = Uitvoering::findOrFail($id);
-        return view('uitvoering.edit', compact('uitvoering'));
+        $cursussen = Cursus::all();
+        return view('uitvoering.edit', compact('uitvoering', 'cursussen'));
     }
 
     /**
@@ -117,7 +121,7 @@ class UitvoeringController extends Controller
         //Data versuren naar een applicatie
         $uitvoering->save();
 
-        return redirect()->route('uitvoering.index')->with('success', 'Functie is aangepast');
+        return redirect()->route('uitvoering.index')->with('success', 'Uitvoering is aangepast');
     }
 
     /**
@@ -129,7 +133,17 @@ class UitvoeringController extends Controller
     public function destroy($id)
     {
         Uitvoering::destroy($id);
-        return redirect()->route('uitvoering.index')->with('success', 'Uitvoering verwijdert');
+        return redirect()->route('uitvoering.index')->with('success', 'Uitvoering verwijderd');
+    }
+
+
+
+
+    public function showCart()
+    {
+        if (!Session::get('cart'))
+            Session::put('cart', []);
+        return view('winkelwagen.index');
     }
 
     public function addToCart($id)
@@ -138,7 +152,27 @@ class UitvoeringController extends Controller
         if (!Session::get('cart'))
             Session::put('cart', []);
         Session::push('cart', $id);
-        return back()->with('success', $uitvoering->name .' toegevoegd aan mandje');
+        return back()->with('success', $uitvoering->cursus->omschrijving .' toegevoegd aan mandje');
+    }
+
+    public function removeFromCart($index)
+    {
+        if (!Session::get('cart'))
+            Session::put('cart', []);
+
+        // if index exists in cart
+        if(isset(Session::get('cart')[$index]))
+        {
+            $uitvoering = Uitvoering::findOrFail(Session::get('cart')[$index]);
+
+            // remove index from cart and replace original cart with modified cart
+            $cart = Session::get('cart');
+            array_splice($cart, $index, 1);
+            Session::put('cart', $cart);
+
+            return back()->with('success', $uitvoering->cursus->omschrijving .' verwijderd uit het mandje');
+        }
+        return back();
     }
 
     /**
@@ -149,7 +183,7 @@ class UitvoeringController extends Controller
     public function emptyCart()
     {
         Session::forget('cart');
-        return back()->with('success', 'Cart Emptied');
+        return back()->with('success', 'Winkelmandje geleegd');
     }
 
     /**
@@ -157,7 +191,25 @@ class UitvoeringController extends Controller
      */
     public function checkout()
     {
+        if (!Session::get('cart'))
+            Session::put('cart', []);
 
+        if(empty(Session::get('cart')))
+            return back();
+
+        $user_id = Auth::id() ?? null;
+        $product_ids = implode(',', Session::get('cart'));
+
+        $factuur = Factuur::create([
+            'user_id' => $user_id,
+            'product_ids' => $product_ids,
+        ]);
+
+        // empty cart
+        Session::forget('cart');
+        Session::put('cart', []);
+
+        return redirect(url('/factuur/'.$factuur->id.'/show'))->with('success', 'Uw bestelling is geplaatst');
     }
 
 }

@@ -15,11 +15,8 @@ class CreateFactuur extends Migration
     {
         Schema::create('factuur', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('omschrijving');
-            $table->string('begin');
-            $table->string('eind');
-            $table->integer('prijs');
-            $table->integer('totaal');
+            $table->bigInteger('user_id')->nullable();
+            $table->text('product_ids');
             $table->timestamps();
         });
     }

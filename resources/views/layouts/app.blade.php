@@ -18,7 +18,7 @@
             <nav class="navbar has-shadow">
                 <div class="container">
                     <div class="navbar-brand">
-                        <a href="{{ url('/') }}" class="navbar-item">{{ config('app.name', 'Laravel') }}</a>
+                        <a href="{{ url('/') }}" class="navbar-item">Hunt en Lauda </a>
 
                         <div class="navbar-burger burger" data-target="navMenu">
                             <span></span>
@@ -30,16 +30,12 @@
                     <div class="navbar-menu" id="navMenu">
                         <div class="navbar-start">
                             <a class="navbar-item" href="/uitvoering">Uitvoering</a>
+                            <a class="navbar-item" href="/cart">Winkelmand</a>
                             @can('manage-functions')
                             <a class="navbar-item" href="/carts">Carts</a>
                             <a class="navbar-item" href="/cursus">Cursus</a>
                             @endcan
                             <a class="navbar-item" href="/">Contact</a>
-                            @if(Auth::guest())
-
-                            @else
-                                <a class="navbar-item" href="/factuur">Factuur</a>
-                            @endif
                             @can('manage-users')
                             <a class="navbar-item" href="{{ route('admin.users.index') }}">Accounts beheren</a>
                         @endcan
