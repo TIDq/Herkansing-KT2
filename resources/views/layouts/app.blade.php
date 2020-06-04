@@ -28,7 +28,23 @@
                     </div>
 
                     <div class="navbar-menu" id="navMenu">
-                        <div class="navbar-start"></div>
+                        <div class="navbar-start">
+                            <a class="navbar-item" href="/uitvoering">Uitvoering</a>
+                            @can('manage-functions')
+                            <a class="navbar-item" href="/carts">Carts</a>
+                            <a class="navbar-item" href="/cursus">Cursus</a>
+                            @endcan
+                            <a class="navbar-item" href="/">Contact</a>
+                            @if(Auth::guest())
+
+                            @else
+                                <a class="navbar-item" href="/factuur">Factuur</a>
+                            @endif
+                            @can('manage-users')
+                            <a class="navbar-item" href="{{ route('admin.users.index') }}">Accounts beheren</a>
+                        @endcan
+                        </div>
+
 
                         <div class="navbar-end">
                             @if (Auth::guest())
@@ -55,10 +71,41 @@
                     </div>
                 </div>
             </nav>
-            @yield('content')
         </div>
-
+        <div class="content container is-fullhd">
+            <div class="container is-fluid">
+                @if(Session::has('success'))
+                    <div class="notification is-success has-margin-30">
+                        <button class="delete"></button>
+                        <div class="alert">
+                            {{ Session::get('success') }}
+                        </div>
+                    </div>
+                @endif
+                @if(Session::has('deleted'))
+                    <div class="notification is-danger has-margin-30">
+                        <button class="delete"></button>
+                        <div class="alert">
+                            {{ Session::get('deleted') }}
+                        </div>
+                    </div>
+                @endif
+                @if ($errors->any())
+                    @foreach ($errors->all() as $error)
+                        <div class="notification is-danger has-margin-30">
+                            <button class="delete"></button>
+                            <div class="alert">
+                                {{ ucfirst($error) }}
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
+              @yield('content')
+            </div>
+        </div>
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}"></script>
+        <script src="{{ asset('js/nodig.js') }}"></script>
+    @stack('scripts')
     </body>
 </html>
